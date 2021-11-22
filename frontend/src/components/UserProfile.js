@@ -109,6 +109,7 @@ const UserProfile = () => {
                       <div style={{ float: "left" }}>
                         <img width="25" height="25" src={renderIcon(entry.eventData.eventCategory)} />
                       </div>
+                      <Spacer x={0.5} />
                       <div style={{ float: "right" }}>
                         <Text small>
                           {entry.eventData.eventText}

@@ -1,41 +1,38 @@
 {
-    "name": "backend",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-      "dev": "export REDIS_URL=redis://localhost:6379 && node backend/src/index.js",
-      "start": "node backend/src/index.js",
-      "lint": "yarn run eslint src --fix",
-      "build": "docker-compose --build",
-      "deploy": "heroku container:push web -a community-backend && heroku container:release web -a community-backend",
-      "heroku-postbuild": "cd frontend && npm install && npm run build"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-      "@firebase/analytics": "^0.6.10",
-      "@firebase/app": "0.x",
-      "@firebase/app-types": "0.x",
-      "@firebase/auth": "^0.16.5",
-      "@firebase/util": "1.x",
-      "body-parser": "^1.19.0",
-      "cors": "^2.8.5",
-      "dotenv": "^8.2.0",
-      "express": "^4.17.1",
-      "firebase": "^8.4.3",
-      "firebase-admin": "^9.7.0",
-      "geofire-common": "^5.2.0",
-      "moment": "^2.29.1",
-      "redis": "^3.1.2",
-      "spotify-web-api-node": "^5.0.2",
-      "twilio": "^3.61.0",
-      "uuidv4": "^6.2.7"
-    },
-    "devDependencies": {
-      "eslint": "^7.26.0",
-      "eslint-config-airbnb-base": "^14.2.1",
-      "eslint-plugin-import": "^2.22.1"
-    },
-    "description": ""
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "export REDIS_URL=redis://localhost:6379 && node backend/src/index.js",
+    "start": "node backend/src/index.js",
+    "lint": "yarn run eslint src --fix",
+    "build": "docker-compose --build",
+    "deploy": "heroku container:push web -a community-backend && heroku container:release web -a community-backend",
+    "heroku-postbuild": "cd frontend && yarn install && yarn run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "firebase": "^8.6.1",
+    "firebase-admin": "^9.7.0",
+    "geofire-common": "^5.2.0",
+    "moment": "^2.29.1",
+    "redis": "^3.1.2",
+    "twilio": "^3.61.0",
+    "uuidv4": "^6.2.7"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  },
+  "description": "",
+  "engines": {
+    "node": "12.x"
   }
+}

@@ -1,4 +1,4 @@
-import { Text } from "@geist-ui/react";
+import { Text, Spacer } from "@geist-ui/react";
 import crimeMarkerIcon from "../assets/crime.png";
 import shoppingMarkerIcon from "../assets/shopping.png";
 import restaurantMarkerIcon from "../assets/restaurant.png";
@@ -30,6 +30,7 @@ const EventWidget = ({ event, width = 300, height = 380 }) => {
                 <div style={{ float: "left" }}>
                     <img width="25" height="25" src={renderIcon(eventData.eventCategory)} />
                 </div>
+                <Spacer x={0.5} />
                 <div style={{ float: "right" }}>
                     <Text small>
                         {eventData.eventText}

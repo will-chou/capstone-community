@@ -18,8 +18,7 @@ import {
 } from "@geist-ui/react";
 
 const Map = ReactMapboxGl({
-  accessToken:
-    "pk.eyJ1IjoibWljaGFlbHcxIiwiYSI6ImNrb29xYXkzZDAxOXMydWxrNm5mdTh2cjUifQ.BUPHP_fptDzgtWTc4mIhIA",
+  accessToken: process.env.REACT_APP_MAPBOX_API_TOKEN
 });
 
 const EventMap = () => {

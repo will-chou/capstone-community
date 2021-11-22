@@ -1,7 +1,6 @@
 const firebase = require('firebase/app');
 const admin = require('firebase-admin');
-require('@firebase/auth');
-require('@firebase/analytics');
+require('firebase/auth');
 require('firebase/firestore');
 require('dotenv').config();
 

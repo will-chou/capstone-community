@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup, Grid, Card, Textarea, Select } from "@geist-ui/react";
+import { Button, ButtonGroup, Grid, Card, Textarea, Select, useToasts } from "@geist-ui/react";
 import { useAuth } from "../auth/authContext";
 import axios from "axios";
 
@@ -9,6 +9,7 @@ const EventPost = () => {
 
     const [eventText, setEventText] = useState(null);
     const [eventCategory, setEventCategory] = useState(null);
+    const [toasts, setToast] = useToasts();
 
     const postEvent = async() => {
         navigator.geolocation.getCurrentPosition(async ({ coords }) => {
@@ -27,8 +28,10 @@ const EventPost = () => {
                 {
                     headers: tokens
                 }).then((res) => {
-                    window.alert(`Posted event ${res.data}`);
-                });
+                    setToast({text: `Shared event successfully! Refresh map to see updates`})
+                }).catch((e) => {
+                    setToast({text: `Something went wrong. Please try again.`})
+                })
         });
 
         setEventText("");
