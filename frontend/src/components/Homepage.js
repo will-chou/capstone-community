@@ -2,8 +2,7 @@ import firebase from "../firebase";
 import { useEffect, Fragment } from "react";
 import { useAuth } from "../auth/authContext";
 import {
-  Row,
-  Col,
+  Grid,
 } from "@geist-ui/react";
 import UserProfile from "./UserProfile";
 import EventPost from "./EventPost";
@@ -24,15 +23,15 @@ export default function Homepage() {
   }, []);
   return (
     <Fragment>
-      <Row gap={.8} style={{ height: "100vh" }}>
-        <Col span={8}>
+      <Grid.Container gap={.8} style={{ height: "100vh" }}>
+        <Grid direction={'column'} xs={8}>
           <EventPost width={"100%"}/>
           <UserProfile />
-        </Col>
-        <Col span={16}>
+        </Grid>
+        <Grid xs={16}>
           <EventMap />
-        </Col>
-      </Row>
+        </Grid>
+      </Grid.Container>
     </Fragment>
   );
 }
