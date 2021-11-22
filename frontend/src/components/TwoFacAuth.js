@@ -6,7 +6,7 @@ import {
   Button,
   Text,
   Spacer,
-  Row,
+  Grid,
   Input,
   Card,
 } from "@geist-ui/react";
@@ -66,37 +66,41 @@ function EnterPhoneNumberStage({ onNext = () => {} }) {
         <Text p>
           We'll send you a verification code for two-factor authentication.
         </Text>
-        <Row align="middle">
-          <Input
-            size="large"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          ></Input>
+        <Grid.Container align="middle">
+          <Grid>
+            <Input
+              size="large"
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            ></Input>
+          </Grid>
           <Spacer x={0.5} />
-          <Button
-            type="secondary"
-            auto
-            onClick={() => {
-              mergeUserData({ phone: phoneNumber }, async () => {
-                setLoadingSubmit(true);
-                const idToken = await user.getIdToken();
-                axios
-                  .post(
-                    `${API_URL}/api/auth/register`,
-                    { phone: phoneNumber },
-                    { headers: { login_token: idToken } }
-                  )
-                  .then(() => {
-                    setLoadingSubmit(false);
-                    onNext();
-                  });
-              });
-            }}
-          >
-            Submit
-          </Button>
-        </Row>
+          <Grid>
+            <Button
+              type="secondary"
+              auto
+              onClick={() => {
+                mergeUserData({ phone: phoneNumber }, async () => {
+                  setLoadingSubmit(true);
+                  const idToken = await user.getIdToken();
+                  axios
+                    .post(
+                      `${API_URL}/api/auth/register`,
+                      { phone: phoneNumber },
+                      { headers: { login_token: idToken } }
+                    )
+                    .then(() => {
+                      setLoadingSubmit(false);
+                      onNext();
+                    });
+                });
+              }}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid.Container>
       </Card>
     </CenteringContainer>
   );
@@ -133,58 +137,66 @@ function EnterVerifCodeStage({ onNext = () => {} }) {
         <Text p span>
           You'll receive a code via text—enter it to enter the app.
         </Text>
-        <Row align="middle">
-          <Text p span>
-            {loadingAuthSession ? (
-              <Text b type="warning">
-                Sending code...
-              </Text>
-            ) : (
-              <Text b type="success">
-                Code sent!
-              </Text>
-            )}
-          </Text>
+        <Grid.Container align="middle">
+          <Grid>
+            <Text p span>
+              {loadingAuthSession ? (
+                <Text b type="warning" margin="0">
+                  Sending code...
+                </Text>
+              ) : (
+                <Text b type="success" margin="0">
+                  Code sent!
+                </Text>
+              )}
+            </Text>
+          </Grid>
           <Spacer x={0.5} />
-          <Button
-            size="mini"
-            auto
-            loading={loadingAuthSession}
-            onClick={() => {
-              setLoadingAuthSession(true);
-              startTwilioAuthSession().then(() => {
-                setLoadingAuthSession(false);
-              });
-            }}
-          >
-            Resend Code
-          </Button>
-        </Row>
+          <Grid>
+            <Button
+              size="small"
+              auto
+              loading={loadingAuthSession}
+              onClick={() => {
+                setLoadingAuthSession(true);
+                startTwilioAuthSession().then(() => {
+                  setLoadingAuthSession(false);
+                });
+              }}
+            >
+              Resend Code
+            </Button>
+          </Grid>
+        </Grid.Container>
         <Spacer y={1} />
-        <Row>
-          <Input
-            placeholder="Code"
-            size="large"
-            onChange={(e) => {
-              setCode(e.target.value);
-            }}
-          ></Input>
+        <Grid.Container align="middle">
+          <Grid>
+            <Input
+              placeholder="Code"
+              size="large"
+              onChange={(e) => {
+                setCode(e.target.value);
+              }}
+            ></Input>
+          </Grid>
           <Spacer x={0.5} />
-          <Button
-            auto
-            type="secondary"
-            loading={loadingSendVerif}
-            onClick={() => {
-              setLoadingSendVerif(true);
-              sendTwilioVerifCode(code).then(() => {
-                setLoadingSendVerif(false);
-                onNext();
-              });
-            }}
-          >
-            Submit
-          </Button>
-        </Row>
+          <Grid>
+            <Button
+              auto
+              type="secondary"
+              loading={loadingSendVerif}
+              onClick={() => {
+                setLoadingSendVerif(true);
+                sendTwilioVerifCode(code).then(() => {
+                  setLoadingSendVerif(false);
+                  onNext();
+                });
+              }}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid.Container>
       </Card>
     </CenteringContainer>
   );
@@ -222,12 +234,12 @@ export default function TwoFacAuth() {
   const { loading } = useAuth();
   if (loading) return <Fragment />;
   return (
-    <Row
+    <Grid
       gap={1}
       style={{ margin: "15px 0", width: "800px", height: "600px" }}
       justify="center"
     >
       <RenderStage stage={stage} setStage={setStage} />
-    </Row>
+    </Grid>
   );
 }
