@@ -1,0 +1,14 @@
+version: '3'
+services:
+  redis-server: 
+    image: 'redis'
+    ports:
+      - "6379:6379"
+  web:
+    env_file: .env
+    build: .
+    image: will-chou/community:latest
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/usr/community
