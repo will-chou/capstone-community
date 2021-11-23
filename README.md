@@ -56,34 +56,6 @@ redis-server & # Start redis server in the background
 yarn dev
 ```
 
-### Running the server via docker compose
-
-From the backend directory:
-
-```
-docker-compose up --build
-```
-
-You can use either docker compose or `yarn dev` to develop locally, though for docker compose you may have to rebuild each time you make a code change.
-
-### **Deploying container to Heroku**
-
-See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
-and then deplying to heroku.
-
-Authenticate to Heroku
-
-```
-heroku login
-heroku container:login
-```
-
-Once you have tested locally via `docker-compose up`, push and release changes to heroku by doing:
-
-```
-yarn deploy
-```
-
 ### Linting
 
 Using eslint-airbnb
