@@ -31,6 +31,9 @@ const shouldRateLimit = (rateLimitKey) => {
         resolve(false);
       }
       const data = JSON.parse(val);
+      if (!data) {
+        return false;
+      }
       const startTime = currTime.subtract(RATE_LIMIT_WINDOW_HOURS, 'h').unix();
       let requestCountInWindow = 0;
       const newData = data.filter((reqGroup) => {
@@ -40,6 +43,7 @@ const shouldRateLimit = (rateLimitKey) => {
         }
         return false;
       });
+
       if (requestCountInWindow >= REQUEST_LIMIT_COUNT) {
         redisClient.set(
           rateLimitKey,
