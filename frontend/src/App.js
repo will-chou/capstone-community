@@ -45,7 +45,7 @@ function App() {
       ) : (
         <Fragment>
           <Text h1>Community</Text>
-          <Text p>It's lit</Text>
+          <Text p>Discover what's happening around you</Text>
           <Spacer y={2} />
           <Button
             onClick={() => {
