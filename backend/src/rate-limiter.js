@@ -85,7 +85,6 @@ const userRateLimiterMiddleware = async (req, res, next) => {
     }
     var shouldLimit = await shouldRateLimit(req.locals.user.email);
     if (shouldLimit) {
-      console.log(shouldLimit);
       return res.status(429).send({ error: 'Rate limit exceeded' });
     }
     return next();
@@ -95,9 +94,10 @@ const userRateLimiterMiddleware = async (req, res, next) => {
 };
 
 // Sliding window counter rate limiting middleware based on request ip
-const ipRateLimiterMiddleware = (req, res, next) => {
+const ipRateLimiterMiddleware = async (req, res, next) => {
   try {
-    if (shouldRateLimit(req.ip)) {
+    var shouldLimit = await shouldRateLimit(req.ip);
+    if (shouldLimit) {
       return res.status(429).send({ error: 'Rate limit exceeded' });
     }
     return next();
