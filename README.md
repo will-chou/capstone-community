@@ -56,6 +56,14 @@ redis-server & # Start redis server in the background
 yarn dev
 ```
 
+### Deploying
+
+```
+heroku login # Log in to heroku
+heroku git:remote -a capstone-community # Add heroku remote if not added yet
+git push heroku main # Make sure heroku remote is added
+```
+
 ### Linting
 
 Using eslint-airbnb
