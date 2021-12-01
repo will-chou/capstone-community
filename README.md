@@ -58,6 +58,22 @@ redis-server & # Start redis server in the background
 yarn dev
 ```
 
+### Testing
+
+Using jest
+
+Create ./jest/setEnvVars.js file with populated env variables like:
+
+```
+process.env.FIREBASE_API_KEY = "..."
+process.env.REDIS_URL = "redis://localhost:6379" (or production domain)
+...
+```
+
+```
+yarn test
+```
+
 ### Deploying
 
 ```

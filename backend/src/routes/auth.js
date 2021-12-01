@@ -48,7 +48,7 @@ async function twilioAuthMiddleware(req, res, next) {
     return res.status(401).send({ error: 'Unauthorized' });
   }
   try {
-    const firebaseRes = await db
+    const firebaseRes = await firebase.firestore()
       .collection('2_fac')
       .doc(req.locals.user.email)
       .get();
@@ -101,7 +101,7 @@ document in Firestore.
 async function handleRegister(req, res) {
   const { email, phone, name, picture } = req.locals.user;
   console.log(req.locals.user);
-  db.collection('user_metadata').doc(email).set({
+  firebase.firestore().collection('user_metadata').doc(email).set({
     phone,
     event_entries: [],
     name,
@@ -140,13 +140,13 @@ async function handleInit2facSession(req, res) {
      * we will only hand over this token to client side when 2-factor authentication is complete
      */
     const token = uuid();
-    db.collection('2_fac').doc(email).set({
+    firebase.firestore().collection('2_fac').doc(email).set({
       sessionId,
       code,
       token,
     });
 
-    const firebaseRes = await db.collection('user_metadata').doc(email).get();
+    const firebaseRes = await firebase.firestore().collection('user_metadata').doc(email).get();
     const userMetadata = firebaseRes.data();
     try {
       const message = await client.messages.create({
@@ -184,7 +184,7 @@ async function handle2FactorAuthentication(req, res) {
     return res.status(400).send({ error: 'Invalid request' });
   }
   try {
-    const firebaseRes = await db.collection('2_fac').doc(email).get();
+    const firebaseRes = await firebase.firestore().collection('2_fac').doc(email).get();
     const twoFacEntry = firebaseRes.data();
     if (sessionId === twoFacEntry.sessionId && code === twoFacEntry.code) {
       return res.status(200).send({ token: twoFacEntry.token });
@@ -209,5 +209,9 @@ function getAuthRoutes() {
 module.exports = {
   firebaseAuthMiddleware,
   twilioAuthMiddleware,
+  validatePhoneForRegistrationMiddleware,
+  handleRegister,
+  handleInit2facSession,
+  handle2FactorAuthentication,
   getAuthRoutes,
 };

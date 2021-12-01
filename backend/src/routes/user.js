@@ -4,11 +4,11 @@ const { firebase } = require('../firebase-init.js');
 const db = firebase.firestore();
 
 async function handleMe(req, res) {
-  const user = await db.collection('user_metadata').doc(req.locals.user.email).get();
+  const user = await firebase.firestore().collection('user_metadata').doc(req.locals.user.email).get();
   if (!user.exists) {
     return res.status(404).send('User not found');
   }
-  const entries = await db.collection('user_metadata')
+  const entries = await firebase.firestore().collection('user_metadata')
     .doc(req.locals.user.email)
     .collection('event_entries')
     .orderBy('ts', 'desc')
@@ -33,4 +33,4 @@ function getUserRoutes() {
   return router;
 }
 
-module.exports = { getUserRoutes };
+module.exports = { handleMe, getUserRoutes };

@@ -8,7 +8,8 @@
     "lint": "yarn run eslint src --fix",
     "build": "docker-compose --build",
     "deploy": "heroku container:push web -a community-backend && heroku container:release web -a community-backend",
-    "heroku-postbuild": "cd frontend && yarn install && yarn run build"
+    "heroku-postbuild": "cd frontend && yarn install && yarn run build",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +30,8 @@
   "devDependencies": {
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^27.4.0"
   },
   "description": "",
   "engines": {
