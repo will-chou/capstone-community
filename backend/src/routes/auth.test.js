@@ -61,6 +61,23 @@ describe("Test firebaseAuthMiddleware", () => {
         expect(res.status).toBeCalledWith(401);
         expect(res.send).toBeCalledWith({error: 'Unauthorized'});
     })
+
+    it('should return 401 if verifyIdToken fails', async () => {
+        const req = {
+            headers: {
+                login_token: 'mock_token',
+            }
+        };
+
+        jest.spyOn(admin, 'auth').mockImplementation(() => {
+            throw new Error();
+        });
+
+        await firebaseAuthMiddleware(req, res, next);
+
+        expect(res.status).toBeCalledWith(401);
+        expect(res.send).toBeCalledWith({error: 'Unauthorized'});
+    })
     
     it('should return next if login token is verified', async () => {
         const req = {
@@ -137,6 +154,28 @@ describe("Test twilioAuthMiddleware", () => {
         expect(firestoreMock.collection).toBeCalledWith('2_fac');
         expect(firestoreMock.doc).toBeCalledWith('test_email');
         expect(firestoreMock.get).toBeCalled();
+
+        expect(res.status).toBeCalledWith(401);
+        expect(res.send).toBeCalledWith({error: 'Unauthorized'});
+    })
+
+    it('should return 401 if error retrieving a 2 fac entry', async () => {
+        const req = {
+            headers: {
+                two_fac_token: 'mock_token',
+            },
+            locals: {
+                user: {
+                    email: "test_email"
+                }
+            }
+        };
+
+        jest.spyOn(firebase, 'firestore').mockImplementation(() => {
+            throw new Error();
+        });
+
+        await twilioAuthMiddleware(req, res, next);
 
         expect(res.status).toBeCalledWith(401);
         expect(res.send).toBeCalledWith({error: 'Unauthorized'});
@@ -341,6 +380,47 @@ describe('Test handleInit2facSession route', () => {
 
         expect(res.status).toBeCalledWith(400);
         expect(res.send).toBeCalledWith({ error: 'Invalid token' });
+    });
+
+    it('should return 500 if Twilio client throws exception', async () => {
+        const req = {
+            locals: {
+                user: {
+                    email: 'test_email',
+                }
+            }
+        };
+
+        jest.spyOn(global.Math, 'floor').mockImplementation(() => 0);
+        jest.spyOn(global.Math, 'random').mockImplementation(() => 0);
+
+        const firestoreMock = {
+            collection: jest.fn().mockReturnThis(),
+            doc: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnValue(),
+            get: jest.fn().mockReturnValue({data: jest.fn().mockReturnValue({phone: '3108254321'})})
+        };
+
+        jest.spyOn(firebase, 'firestore').mockImplementation(() => firestoreMock);
+
+        const message = {
+            create: jest.fn().mockRejectedValue()
+        };
+        client.messages = message;
+
+        await handleInit2facSession(req, res);
+
+        expect(firestoreMock.collection).toBeCalledWith('2_fac');
+        expect(firestoreMock.collection).toBeCalledWith('user_metadata');
+        expect(firestoreMock.doc).toBeCalledWith('test_email');
+        expect(firestoreMock.set).toBeCalledWith({
+            sessionId: 'mock_uuid',
+            code: '1000',
+            token: 'mock_uuid'
+        });
+        expect(firestoreMock.get).toBeCalled();
+
+        expect(res.status).toBeCalledWith(500);
     });
 
     it('should return 200 and send SMS through Twilio if no exceptions', async () => {

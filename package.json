@@ -9,7 +9,7 @@
     "build": "docker-compose --build",
     "deploy": "heroku container:push web -a community-backend && heroku container:release web -a community-backend",
     "heroku-postbuild": "cd frontend && yarn install && yarn run build",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
