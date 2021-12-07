@@ -1,6 +1,7 @@
-const { handleEvent, searchNearbyEvents } = require("./events.js");
+const { handleEvent, searchNearbyEvents, getEventRoutes } = require("./events.js");
 const { firebase } = require('../firebase-init.js');
 const geofire = require('geofire-common');
+const express = require('express');
 
 describe("Test handleEvent route", () => {
     const res = {
@@ -228,4 +229,68 @@ describe("Test searchNearbyEvents route", () => {
         expect(res.send).toBeCalledWith(['mock_data']);
     });
 
+    it('should return 200 if lat/lng/radius are valid and filter out events not within radius', async () => {
+        const req = {
+            query: {
+                lat: 1,
+                lng: 1,
+                radius: 25,
+            }
+        };
+
+        const firestoreMock = {
+            collection: jest.fn().mockReturnThis(),
+            doc: jest.fn().mockReturnThis(),
+            get: jest.fn().mockResolvedValueOnce({
+                docs: [{
+                    get: jest.fn().mockReturnValue(1),
+                    data: jest.fn().mockReturnValue('mock_data'),
+                }],
+                data: jest.fn().mockReturnValue('user')
+            }),
+            orderBy: jest.fn().mockReturnThis(),
+            startAt: jest.fn().mockReturnThis(),
+            endAt: jest.fn().mockReturnThis(),
+        };
+
+        jest.spyOn(firebase, 'firestore').mockImplementation(() => firestoreMock);
+
+        jest.spyOn(geofire, 'geohashQueryBounds').mockImplementation(() => [[2, 2]]);
+        jest.spyOn(geofire, 'distanceBetween').mockImplementation(() => 26);
+
+        await searchNearbyEvents(req, res);
+
+        expect(geofire.geohashQueryBounds).toBeCalledWith([1, 1], 25);
+        expect(firestoreMock.collection).toBeCalledWith('eventEntries');
+        expect(firestoreMock.orderBy).toBeCalledWith('locationHash');
+        expect(firestoreMock.startAt).toBeCalledWith(2);
+        expect(firestoreMock.endAt).toBeCalledWith(2);
+        expect(firestoreMock.get).toBeCalled();
+        
+        expect(firestoreMock.collection).toBeCalledTimes(1);
+        expect(firestoreMock.orderBy).toBeCalledTimes(1);
+        expect(firestoreMock.startAt).toBeCalledTimes(1);
+        expect(firestoreMock.endAt).toBeCalledTimes(1);
+        expect(firestoreMock.get).toBeCalledTimes(1);
+
+        expect(res.status).toBeCalledWith(200);
+        expect(res.send).toBeCalledWith([]);
+    });
+
+});
+
+describe("Test getEventRoutes", () => {
+    it('should return router with event routes', () => {
+        const expressMock = {
+            get: jest.fn().mockReturnThis(),
+            post: jest.fn().mockReturnThis(),
+        };
+        
+        jest.spyOn(express, 'Router').mockImplementation(() => expressMock);
+
+        getEventRoutes();
+
+        expect(expressMock.post).toBeCalledWith('/', handleEvent);
+        expect(expressMock.get).toBeCalledWith('/nearby', searchNearbyEvents);
+    });
 });

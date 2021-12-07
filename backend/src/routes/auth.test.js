@@ -5,10 +5,12 @@ const {
     handleRegister,
     handleInit2facSession,
     handle2FactorAuthentication,
+    getAuthRoutes
 } = require("./auth.js");
 const { firebase, admin } = require('../firebase-init.js');
 const { uuid } = require('uuidv4');
 const client = require('../twilio-init.js');
+const express = require('express');
 
 jest.mock('uuidv4');
 uuid.mockImplementation(() => 'mock_uuid');
@@ -577,6 +579,41 @@ describe('Test handle2FactorAuthentication', () => {
         expect(res.send).toBeCalledWith({error: 'Incorrect code'});
     });
 
+    it('should return 401 if exception thrown while retrieving code', async () => {
+        const req = {
+            body: {
+                sessionId: 'mock_id',
+                code: 1000,
+            },
+            locals: {
+                user: {
+                    email: 'test_email',
+                }
+            }
+        };
+
+        const firestoreMock = {
+            collection: jest.fn().mockReturnThis(),
+            doc: jest.fn().mockReturnThis(),
+            get: jest.fn().mockResolvedValueOnce({
+                data: jest.fn().mockImplementation(() => {
+                    throw new Error();
+                })
+            }),
+        };
+
+        jest.spyOn(firebase, 'firestore').mockImplementation(() => firestoreMock);
+
+        await handle2FactorAuthentication(req, res);
+
+        expect(firestoreMock.collection).toBeCalledWith('2_fac');
+        expect(firestoreMock.doc).toBeCalledWith('test_email');
+        expect(firestoreMock.get).toBeCalled();
+        
+        expect(res.status).toBeCalledWith(401);
+        expect(res.send).toBeCalledWith({error: 'No session found'});
+    });
+
     it('should return 200 if successful 2 fac auth with matching code', async () => {
         const req = {
             body: {
@@ -612,5 +649,22 @@ describe('Test handle2FactorAuthentication', () => {
         
         expect(res.status).toBeCalledWith(200);
         expect(res.send).toBeCalledWith({token: 'mock_token'});
+    });
+});
+
+describe("Test getAuthRoutes", () => {
+    it('should return router with auth routes', () => {
+        const expressMock = {
+            get: jest.fn().mockReturnThis(),
+            post: jest.fn().mockReturnThis(),
+        };
+        
+        jest.spyOn(express, 'Router').mockImplementation(() => expressMock);
+
+        getAuthRoutes();
+
+        expect(expressMock.post).toBeCalledWith('/register', validatePhoneForRegistrationMiddleware, handleRegister);
+        expect(expressMock.get).toBeCalledWith('/init2facSession', handleInit2facSession);
+        expect(expressMock.post).toBeCalledWith('/complete2fac', handle2FactorAuthentication);
     });
 });

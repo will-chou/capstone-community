@@ -17,9 +17,7 @@ function getRoutes() {
   router.use(twilioAuthMiddleware);
   // Routes protected by twilio auth should be rate limited based on authenticated user
   router.use(userRateLimiterMiddleware);
-  // router.use('/songs', getSongRoutes());
   router.use('/events', getEventRoutes());
-  // router.use('/spotify', getSpotifyRoutes());
   router.use('/users', getUserRoutes());
   return router;
 }
